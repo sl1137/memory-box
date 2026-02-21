@@ -183,7 +183,7 @@
 
   <script>
     // ✅ 改这里：填你的 n8n Chat URL（必须以 /chat 结尾）
-    const WEBHOOK_URL = "PASTE_YOUR_N8N_CHAT_URL_HERE";
+    const WEBHOOK_URL = "https://sl11565-n8n-free.hf.space/webhook/c3147549-60be-453e-9fbd-418219cfea28/chat";
 
     const $messages = document.getElementById("messages");
     const $input = document.getElementById("input");
@@ -207,7 +207,7 @@
     }
 
     // ✅ 启动语（简短，不刷屏）
-    addMsg("嗨～我是碎片匣🍀 你想先问旅行、纽约日常、学习项目，还是兴趣爱好？", "ai");
+    addMsg("嗨～我是灯灯的记忆碎片匣🍀 可以帮你了解她的各种生活片段，你想先问旅行、纽约日常、学习项目，还是兴趣爱好？", "ai");
 
     async function ask(q){
       const msg = (q ?? $input.value).trim();
