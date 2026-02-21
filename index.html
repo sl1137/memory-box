@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>灯灯的记忆碎片匣</title>
+  <style>
+    :root{
+      --bg0:#f6f7fb;
+      --text:#101828;
+      --muted:#667085;
+      --card:rgba(255,255,255,.58);
+      --border:rgba(16,24,40,.10);
+      --shadow: 0 18px 60px rgba(16,24,40,.12);
+      --shadow2: 0 10px 24px rgba(16,24,40,.10);
+      --radius: 22px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 18% 18%, rgba(127, 173, 255, .55), transparent 62%),
+        radial-gradient(900px 520px at 72% 22%, rgba(255, 154, 140, .50), transparent 60%),
+        radial-gradient(900px 520px at 56% 88%, rgba(178, 142, 255, .42), transparent 62%),
+        linear-gradient(180deg, #f7f8fc 0%, #f3f5fb 55%, #f7f8fc 100%);
+      overflow:hidden;
+    }
+    /* noise overlay */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.14'/%3E%3C/svg%3E");
+      mix-blend-mode:soft-light;
+      pointer-events:none;
+    }
+
+    .wrap{
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+    }
+
+    .shell{
+      width:min(980px, 100%);
+      height:min(720px, calc(100vh - 56px));
+      border-radius: 28px;
+      background: rgba(255,255,255,.32);
+      border: 1px solid rgba(255,255,255,.55);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+    }
+
+    /* left brand panel */
+    .brand{
+      padding:28px;
+      border-right:1px solid rgba(255,255,255,.55);
+      background:
+        radial-gradient(700px 380px at 26% 22%, rgba(255,255,255,.78), transparent 62%),
+        radial-gradient(700px 380px at 62% 78%, rgba(255,255,255,.62), transparent 62%),
+        rgba(255,255,255,.20);
+    }
+    .kicker{
+      font-size:12px;
+      letter-spacing:.12em;
+      color:rgba(16,24,40,.55);
+      text-transform:uppercase;
+    }
+    .logo{
+      margin-top:14px;
+      font-size:44px;
+      font-weight:700;
+      line-height:1.02;
+      letter-spacing:-.02em;
+    }
+    .tag{
+      margin-top:14px;
+      font-size:15px;
+      color:rgba(16,24,40,.70);
+      line-height:1.6;
+      max-width: 36ch;
+    }
+    .chips{
+      margin-top:18px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .chip{
+      font-size:12px;
+      color:rgba(16,24,40,.74);
+      padding:10px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.55);
+      border:1px solid rgba(16,24,40,.10);
+      box-shadow: 0 10px 18px rgba(16,24,40,.06);
+      cursor:pointer;
+      user-select:none;
+      transition: transform .08s ease, background .12s ease;
+    }
+    .chip:hover{transform: translateY(-1px); background:rgba(255,255,255,.70);}
+
+    .note{
+      margin-top:18px;
+      font-size:12px;
+      color:rgba(16,24,40,.55);
+      line-height:1.6;
+    }
+
+    /* right chat panel */
+    .chat{
+      display:flex;
+      flex-direction:column;
+      padding:16px;
+      gap:12px;
+    }
+    .chatHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 14px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.55);
+      border:1px solid rgba(16,24,40,.10);
+      box-shadow: var(--shadow2);
+    }
+    .chatTitle{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+    .chatTitle b{font-size:14px}
+    .chatTitle span{font-size:12px;color:var(--muted)}
+    .pill{
+      font-size:12px;
+      color:rgba(16,24,40,.62);
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(16,24,40,.10);
+      background:rgba(255,255,255,.55);
+    }
+
+    .body{
+      flex:1;
+      padding:14px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.46);
+      border:1px solid rgba(16,24,40,.10);
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      box-shadow: var(--shadow2);
+    }
+    .msg{
+      max-width: 84%;
+      padding:12px 12px;
+      border-radius:16px;
+      font-size:14px;
+      line-height:1.55;
+      white-space:pre-wrap;
+      border:1px solid rgba(16,24,40,.10);
+      background:rgba(255,255,255,.62);
+    }
+    .ai{align-self:flex-start}
+    .me{
+      align-self:flex-end;
+      background: rgba(127, 173, 255, .24);
+      border-color: rgba(127, 173, 255, .40);
+    }
+
+    .foot{
+      display:flex;
+      gap:10px;
+      padding:12px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.55);
+      border:1px solid rgba(16,24,40,.10);
+      box-shadow: var(--shadow2);
+    }
+    .input{
+      flex:1;
+      border-radius:14px;
+      border:1px solid rgba(16,24,40,.12);
+      background: rgba(255,255,255,.68);
+      padding:12px 12px;
+      font-size:14px;
+      outline:none;
+    }
+    .btn{
+      border-radius:14px;
+      border:1px solid rgba(16,24,40,.12);
+      background: rgba(255,255,255,.72);
+      padding:12px 14px;
+      cursor:pointer;
+      transition: transform .08s ease, background .12s ease;
+    }
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.86);}
+
+    @media (max-width: 900px){
+      body{overflow:auto}
+      .shell{grid-template-columns:1fr; height:auto;}
+      .brand{border-right:none;border-bottom:1px solid rgba(255,255,255,.55);}
+      .wrap{align-items:stretch}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="shell">
+      <section class="brand">
+        <div class="kicker">MEMORY FRAGMENTS</div>
+        <div class="logo">灯灯的<br/>记忆碎片匣</div>
+        <div class="tag">我是一个小小的碎片匣导览员🧩 你问什么，我就翻什么。想先从哪一块开始？</div>
+
+        <div class="chips">
+          <div class="chip" data-q="灯灯是谁？">她是谁</div>
+          <div class="chip" data-q="她在纽约最喜欢去哪里？">纽约最喜欢去哪</div>
+          <div class="chip" data-q="她在美国去过哪些地方旅行？">旅行去过哪</div>
+          <div class="chip" data-q="给我一个纽约生活碎片。">来个生活碎片</div>
+          <div class="chip" data-q="她喜欢什么兴趣爱好？">兴趣爱好</div>
+        </div>
+
+        <div class="note">小提示：如果我没翻到相关碎片，我会请你把问题问得更具体一点🙂</div>
+      </section>
+
+      <section class="chat">
+        <div class="chatHead">
+          <div class="chatTitle">
+            <b>对话</b>
+            <span>浅浅聊两句就好，不会刷屏</span>
+          </div>
+          <div class="pill">chatInput</div>
+        </div>
+
+        <div class="body" id="body"></div>
+
+        <div class="foot">
+          <input class="input" id="input" placeholder="问我点什么…（比如：她爱运动吗？）" />
+          <button class="btn" id="send">发送</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const WEBHOOK_URL = "https://sl11565-n8n-free.hf.space/webhook/c3147549-60be-453e-9fbd-418219cfea28/chat";
+    const body = document.getElementById('body');
+    const input = document.getElementById('input');
+    const send = document.getElementById('send');
+    const chips = document.querySelectorAll('.chip');
+
+    const sessionId = localStorage.getItem('mm_session') || (crypto.randomUUID?.() || String(Date.now()));
+    localStorage.setItem('mm_session', sessionId);
+
+    function add(text, cls){
+      const d = document.createElement('div');
+      d.className = `msg ${cls}`;
+      d.textContent = text;
+      body.appendChild(d);
+      body.scrollTop = body.scrollHeight;
+      return d;
+    }
+
+    add("嗨～我在这儿🧩 你想先了解灯灯的哪一块：旅行、纽约日常、学习项目，还是兴趣爱好？", "ai");
+
+    async function sendMsg(q){
+      const msg = (q ?? input.value).trim();
+      if(!msg) return;
+
+      add(msg, "me");
+      input.value = "";
+
+      const thinking = add("（我翻翻碎片…）", "ai");
+
+      try{
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({ chatInput: msg, sessionId })
+        });
+        const data = await res.json();
+        thinking.remove();
+        add(data.output || data.reply || data.text || "我这边刚刚没接上，再发一次试试？", "ai");
+      }catch(e){
+        thinking.remove();
+        add("我这边刚刚卡了一下😵‍💫 你再试一次？", "ai");
+      }
+    }
+
+    send.onclick = () => sendMsg();
+    input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') sendMsg(); });
+    chips.forEach(c => c.onclick = () => sendMsg(c.dataset.q));
+  </script>
+</body>
+</html>
