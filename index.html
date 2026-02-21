@@ -85,7 +85,7 @@
       font-size:15px;
       color:rgba(16,24,40,.70);
       line-height:1.6;
-      max-width: 36ch;
+      max-width: 38ch;
     }
     .chips{
       margin-top:18px;
@@ -98,14 +98,14 @@
       color:rgba(16,24,40,.74);
       padding:10px 12px;
       border-radius:999px;
-      background:rgba(255,255,255,.55);
+      background:rgba(255,255,255,.60);
       border:1px solid rgba(16,24,40,.10);
       box-shadow: 0 10px 18px rgba(16,24,40,.06);
       cursor:pointer;
       user-select:none;
       transition: transform .08s ease, background .12s ease;
     }
-    .chip:hover{transform: translateY(-1px); background:rgba(255,255,255,.70);}
+    .chip:hover{transform: translateY(-1px); background:rgba(255,255,255,.78);}
 
     .note{
       margin-top:18px;
@@ -127,7 +127,7 @@
       justify-content:space-between;
       padding:14px 14px;
       border-radius: var(--radius);
-      background: rgba(255,255,255,.55);
+      background: rgba(255,255,255,.60);
       border:1px solid rgba(16,24,40,.10);
       box-shadow: var(--shadow2);
     }
@@ -144,14 +144,14 @@
       padding:8px 10px;
       border-radius:999px;
       border:1px solid rgba(16,24,40,.10);
-      background:rgba(255,255,255,.55);
+      background:rgba(255,255,255,.60);
     }
 
     .body{
       flex:1;
       padding:14px;
       border-radius: var(--radius);
-      background: rgba(255,255,255,.46);
+      background: rgba(255,255,255,.52);
       border:1px solid rgba(16,24,40,.10);
       overflow:auto;
       display:flex;
@@ -167,13 +167,13 @@
       line-height:1.55;
       white-space:pre-wrap;
       border:1px solid rgba(16,24,40,.10);
-      background:rgba(255,255,255,.62);
+      background:rgba(255,255,255,.72);
     }
     .ai{align-self:flex-start}
     .me{
       align-self:flex-end;
-      background: rgba(127, 173, 255, .24);
-      border-color: rgba(127, 173, 255, .40);
+      background: rgba(127, 173, 255, .26);
+      border-color: rgba(127, 173, 255, .42);
     }
 
     .foot{
@@ -181,7 +181,7 @@
       gap:10px;
       padding:12px;
       border-radius: var(--radius);
-      background: rgba(255,255,255,.55);
+      background: rgba(255,255,255,.60);
       border:1px solid rgba(16,24,40,.10);
       box-shadow: var(--shadow2);
     }
@@ -189,7 +189,7 @@
       flex:1;
       border-radius:14px;
       border:1px solid rgba(16,24,40,.12);
-      background: rgba(255,255,255,.68);
+      background: rgba(255,255,255,.78);
       padding:12px 12px;
       font-size:14px;
       outline:none;
@@ -197,12 +197,12 @@
     .btn{
       border-radius:14px;
       border:1px solid rgba(16,24,40,.12);
-      background: rgba(255,255,255,.72);
+      background: rgba(255,255,255,.82);
       padding:12px 14px;
       cursor:pointer;
       transition: transform .08s ease, background .12s ease;
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.86);}
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.92);}
 
     @media (max-width: 900px){
       body{overflow:auto}
@@ -218,7 +218,7 @@
       <section class="brand">
         <div class="kicker">MEMORY FRAGMENTS</div>
         <div class="logo">灯灯的<br/>记忆碎片匣</div>
-        <div class="tag">我是一个小小的碎片匣导览员🧩 你问什么，我就翻什么。想先从哪一块开始？</div>
+        <div class="tag">我是一个小小的碎片匣导览员🍀 你问什么，我就翻什么。想先从哪一块开始？</div>
 
         <div class="chips">
           <div class="chip" data-q="灯灯是谁？">她是谁</div>
@@ -251,7 +251,9 @@
   </div>
 
   <script>
+    // ✅ 改这里：粘贴你的 n8n Chat URL（必须以 /chat 结尾）
     const WEBHOOK_URL = "https://sl11565-n8n-free.hf.space/webhook/c3147549-60be-453e-9fbd-418219cfea28/chat";
+
     const body = document.getElementById('body');
     const input = document.getElementById('input');
     const send = document.getElementById('send');
@@ -269,7 +271,7 @@
       return d;
     }
 
-    add("嗨～我在这儿🧩 你想先了解灯灯的哪一块：旅行、纽约日常、学习项目，还是兴趣爱好？", "ai");
+    add("嗨～我在这儿🍀 你想先了解灯灯的哪一块：旅行、纽约日常、学习项目，还是兴趣爱好？", "ai");
 
     async function sendMsg(q){
       const msg = (q ?? input.value).trim();
@@ -281,11 +283,23 @@
       const thinking = add("（我翻翻碎片…）", "ai");
 
       try{
+        // ✅ 用表单提交，避免触发 CORS 预检 OPTIONS
+        const form = new URLSearchParams();
+        form.set("chatInput", msg);
+        form.set("sessionId", sessionId);
+
         const res = await fetch(WEBHOOK_URL, {
           method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify({ chatInput: msg, sessionId })
+          body: form, // 不要手动写 Content-Type
         });
+
+        // 保险：如果不是 200，给出更明确提示（不会刷屏）
+        if (!res.ok) {
+          thinking.remove();
+          add(`我这边没连上（HTTP ${res.status}）😵‍💫 你再试一次？`, "ai");
+          return;
+        }
+
         const data = await res.json();
         thinking.remove();
         add(data.output || data.reply || data.text || "我这边刚刚没接上，再发一次试试？", "ai");
