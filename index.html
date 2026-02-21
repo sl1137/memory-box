@@ -56,6 +56,7 @@
       overflow:hidden;
       display:grid;
       grid-template-columns: 1.05fr .95fr;
+      min-height:0; /* ✅ 保险：允许内部滚动布局生效 */
     }
 
     /* left brand panel */
@@ -66,6 +67,7 @@
         radial-gradient(700px 380px at 26% 22%, rgba(255,255,255,.78), transparent 62%),
         radial-gradient(700px 380px at 62% 78%, rgba(255,255,255,.62), transparent 62%),
         rgba(255,255,255,.20);
+      min-height:0;
     }
     .kicker{
       font-size:12px;
@@ -87,26 +89,6 @@
       line-height:1.6;
       max-width: 38ch;
     }
-    .chips{
-      margin-top:18px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-    }
-    .chip{
-      font-size:12px;
-      color:rgba(16,24,40,.74);
-      padding:10px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.60);
-      border:1px solid rgba(16,24,40,.10);
-      box-shadow: 0 10px 18px rgba(16,24,40,.06);
-      cursor:pointer;
-      user-select:none;
-      transition: transform .08s ease, background .12s ease;
-    }
-    .chip:hover{transform: translateY(-1px); background:rgba(255,255,255,.78);}
-
     .note{
       margin-top:18px;
       font-size:12px;
@@ -120,6 +102,7 @@
       flex-direction:column;
       padding:16px;
       gap:12px;
+      min-height:0; /* ✅ 关键：让 .body 可以滚 */
     }
     .chatHead{
       display:flex;
@@ -130,6 +113,7 @@
       background: rgba(255,255,255,.60);
       border:1px solid rgba(16,24,40,.10);
       box-shadow: var(--shadow2);
+      flex:0 0 auto;
     }
     .chatTitle{
       display:flex;
@@ -148,8 +132,9 @@
     }
 
     .body{
-      flex:1;
-      padding:14px;
+      flex:1 1 auto;
+      min-height:0; /* ✅ 关键：否则 overflow:auto 可能不滚 */
+      padding:14px 14px 18px;
       border-radius: var(--radius);
       background: rgba(255,255,255,.52);
       border:1px solid rgba(16,24,40,.10);
@@ -158,6 +143,7 @@
       flex-direction:column;
       gap:10px;
       box-shadow: var(--shadow2);
+      -webkit-overflow-scrolling: touch;
     }
     .msg{
       max-width: 84%;
@@ -184,6 +170,9 @@
       background: rgba(255,255,255,.60);
       border:1px solid rgba(16,24,40,.10);
       box-shadow: var(--shadow2);
+      flex:0 0 auto;
+      position:relative;
+      z-index:10;
     }
     .input{
       flex:1;
@@ -201,33 +190,35 @@
       padding:12px 14px;
       cursor:pointer;
       transition: transform .08s ease, background .12s ease;
+      pointer-events:auto;
     }
     .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.92);}
+    .btn:disabled{opacity:.65; cursor:not-allowed;}
 
+    /* mobile */
     @media (max-width: 900px){
       body{overflow:auto}
-      .shell{grid-template-columns:1fr; height:auto;}
-      .brand{border-right:none;border-bottom:1px solid rgba(255,255,255,.55);}
+      .shell{
+        grid-template-columns:1fr;
+        height:auto;
+      }
+      .brand{
+        border-right:none;
+        border-bottom:1px solid rgba(255,255,255,.55);
+      }
       .wrap{align-items:stretch}
+      .chat{min-height: 520px;}
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="shell">
       <section class="brand">
         <div class="kicker">MEMORY FRAGMENTS</div>
         <div class="logo">灯灯的<br/>记忆碎片匣</div>
-        <div class="tag">我是一个小小的碎片匣导览员🍀 你问什么，我就翻什么。想先从哪一块开始？</div>
-
-        <div class="chips">
-          <div class="chip" data-q="灯灯是谁？">她是谁</div>
-          <div class="chip" data-q="她在纽约最喜欢去哪里？">纽约最喜欢去哪</div>
-          <div class="chip" data-q="她在美国去过哪些地方旅行？">旅行去过哪</div>
-          <div class="chip" data-q="给我一个纽约生活碎片。">来个生活碎片</div>
-          <div class="chip" data-q="她喜欢什么兴趣爱好？">兴趣爱好</div>
-        </div>
-
+        <div class="tag">我是一个小小的碎片匣导览员🍀 你问什么，我就翻什么。想问就直接问一个具体问题～</div>
         <div class="note">小提示：如果我没翻到相关碎片，我会请你把问题问得更具体一点🙂</div>
       </section>
 
@@ -243,7 +234,7 @@
         <div class="body" id="body"></div>
 
         <div class="foot">
-          <input class="input" id="input" placeholder="问我点什么…（比如：她爱运动吗？）" />
+          <input class="input" id="input" placeholder="问我点什么…（比如：她在美国去过哪些地方旅行？）" />
           <button class="btn" id="send">发送</button>
         </div>
       </section>
@@ -251,31 +242,40 @@
   </div>
 
   <script>
-    // ✅ 改这里：粘贴你的 n8n Chat URL（必须以 /chat 结尾）
+    // ✅ 改这里：你的 n8n Chat URL（必须以 /chat 结尾）
     const WEBHOOK_URL = "https://sl11565-n8n-free.hf.space/webhook/c3147549-60be-453e-9fbd-418219cfea28/chat";
 
     const body = document.getElementById('body');
     const input = document.getElementById('input');
     const send = document.getElementById('send');
-    const chips = document.querySelectorAll('.chip');
 
+    // 会话 id（可保留上下文）
     const sessionId = localStorage.getItem('mm_session') || (crypto.randomUUID?.() || String(Date.now()));
     localStorage.setItem('mm_session', sessionId);
+
+    let isSending = false;
 
     function add(text, cls){
       const d = document.createElement('div');
       d.className = `msg ${cls}`;
       d.textContent = text;
       body.appendChild(d);
-      body.scrollTop = body.scrollHeight;
+
+      // ✅ 最稳的自动滚动：滚到“新消息”本身
+      d.scrollIntoView({ block: "end", behavior: "smooth" });
       return d;
     }
 
-    add("嗨～我在这儿🍀 你想先了解灯灯的哪一块：旅行、纽约日常、学习项目，还是兴趣爱好？", "ai");
+    // 启动语：短一点，不爆输出
+    add("嗨～我在这儿🍀 你想先问哪一段碎片？", "ai");
 
     async function sendMsg(q){
       const msg = (q ?? input.value).trim();
-      if(!msg) return;
+      if(!msg || isSending) return;
+
+      isSending = true;
+      send.disabled = true;
+      input.disabled = true;
 
       add(msg, "me");
       input.value = "";
@@ -283,35 +283,40 @@
       const thinking = add("（我翻翻碎片…）", "ai");
 
       try{
-        // ✅ 用表单提交，避免触发 CORS 预检 OPTIONS
+        // ✅ 用表单提交，减少触发 CORS 预检
         const form = new URLSearchParams();
         form.set("chatInput", msg);
         form.set("sessionId", sessionId);
 
         const res = await fetch(WEBHOOK_URL, {
           method: "POST",
-          body: form, // 不要手动写 Content-Type
+          body: form,
         });
 
-        // 保险：如果不是 200，给出更明确提示（不会刷屏）
         if (!res.ok) {
-          thinking.remove();
-          add(`我这边没连上（HTTP ${res.status}）😵‍💫 你再试一次？`, "ai");
+          thinking.textContent = `我这边没连上（HTTP ${res.status}）😵‍💫 你再试一次？`;
           return;
         }
 
-        const data = await res.json();
-        thinking.remove();
-        add(data.output || data.reply || data.text || "我这边刚刚没接上，再发一次试试？", "ai");
-      }catch(e){
-        thinking.remove();
-        add("我这边刚刚卡了一下😵‍💫 你再试一次？", "ai");
+        const data = await res.json().catch(()=> ({}));
+        const out = data.output || data.reply || data.text || data.message || "";
+
+        thinking.textContent = out || "我这段暂时没翻到对应碎片🙂 你能把问题问得更具体一点吗？";
+        // 再保险滚一次（防某些浏览器 smooth 被打断）
+        thinking.scrollIntoView({ block: "end", behavior: "smooth" });
+
+      } catch(e){
+        thinking.textContent = "我这边刚刚卡了一下😵‍💫 你再试一次？";
+      } finally {
+        isSending = false;
+        send.disabled = false;
+        input.disabled = false;
+        input.focus();
       }
     }
 
-    send.onclick = () => sendMsg();
+    send.addEventListener('click', ()=>sendMsg());
     input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') sendMsg(); });
-    chips.forEach(c => c.onclick = () => sendMsg(c.dataset.q));
   </script>
 </body>
 </html>
