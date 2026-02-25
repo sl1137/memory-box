@@ -6,33 +6,42 @@
   <title>灯灯的记忆碎片匣</title>
   <style>
     :root{
-      --bg0:#f6f7fb;
-      --text:#101828;
-      --muted:#667085;
-      --card:rgba(255,255,255,.58);
-      --border:rgba(16,24,40,.10);
-      --shadow: 0 18px 60px rgba(16,24,40,.12);
-      --shadow2: 0 10px 24px rgba(16,24,40,.10);
-      --radius: 22px;
+      /* 你截图2的配色 */
+      --pink-strong:#E56D6B;
+      --pink-soft:#FA7A77;
+      --pink-bg:#FFE5E4;
+      --blue-soft:#87E1FF;
+
+      --text:#1b2130;
+      --muted:#6f788b;
+      --card:rgba(255,255,255,.72);
+      --border:rgba(16,24,40,.08);
+
+      --shadow: 0 18px 60px rgba(15, 23, 42, .08);
+      --shadow2: 0 10px 26px rgba(15, 23, 42, .06);
+      --radius: 24px;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
+
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", Arial;
+      font-family: ui-rounded, "SF Pro Rounded", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
       color:var(--text);
       background:
-        radial-gradient(900px 520px at 18% 18%, rgba(127, 173, 255, .55), transparent 62%),
-        radial-gradient(900px 520px at 72% 22%, rgba(255, 154, 140, .50), transparent 60%),
-        radial-gradient(900px 520px at 56% 88%, rgba(178, 142, 255, .42), transparent 62%),
-        linear-gradient(180deg, #f7f8fc 0%, #f3f5fb 55%, #f7f8fc 100%);
+        radial-gradient(900px 520px at 14% 12%, color-mix(in srgb, var(--blue-soft) 65%, white) 0%, transparent 62%),
+        radial-gradient(900px 520px at 84% 12%, color-mix(in srgb, var(--pink-soft) 38%, white) 0%, transparent 58%),
+        radial-gradient(720px 460px at 52% 96%, color-mix(in srgb, var(--pink-bg) 80%, white) 0%, transparent 60%),
+        linear-gradient(180deg, #f9fcff 0%, #f4f8ff 45%, #fff9fa 100%);
       overflow:hidden;
     }
-    /* noise overlay */
+
+    /* 轻微噪点 */
     body::before{
       content:"";
       position:fixed; inset:0;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.14'/%3E%3C/svg%3E");
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
       mix-blend-mode:soft-light;
       pointer-events:none;
     }
@@ -42,102 +51,204 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:28px;
-    }
-
-    .shell{
-      width:min(980px, 100%);
-      height:min(720px, calc(100vh - 56px));
-      border-radius: 28px;
-      background: rgba(255,255,255,.32);
-      border: 1px solid rgba(255,255,255,.55);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
+      padding:24px;
+      position:relative;
       overflow:hidden;
-      display:grid;
-      grid-template-columns: 1.05fr .95fr;
-      min-height:0; /* ✅ 保险：允许内部滚动布局生效 */
     }
 
-    /* left brand panel */
-    .brand{
-      padding:28px;
-      border-right:1px solid rgba(255,255,255,.55);
-      background:
-        radial-gradient(700px 380px at 26% 22%, rgba(255,255,255,.78), transparent 62%),
-        radial-gradient(700px 380px at 62% 78%, rgba(255,255,255,.62), transparent 62%),
-        rgba(255,255,255,.20);
-      min-height:0;
+    /* ===== S型漂浮插画层（不挡内容） ===== */
+    .decor{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:1;
     }
+    .decor svg{
+      position:absolute;
+      overflow:visible;
+      width:auto;
+      height:auto;
+      filter: drop-shadow(0 4px 10px rgba(229,109,107,.05));
+    }
+
+    /* S 型分布：左上 -> 右上中 -> 左下中 -> 右下 */
+    .decor .d1{ top:7%;  left:4%;  width:170px; opacity:.22; transform:rotate(-8deg); }
+    .decor .d2{ top:23%; right:6%; width:165px; opacity:.20; transform:rotate(8deg); }
+    .decor .d3{ top:56%; left:6%;  width:185px; opacity:.18; transform:rotate(-10deg); }
+    .decor .d4{ top:74%; right:8%; width:190px; opacity:.20; transform:rotate(10deg); }
+
+    /* 主卡片 */
+    .shell{
+      width:min(940px, 100%);
+      height:min(760px, calc(100vh - 48px));
+      border-radius: 30px;
+      background: rgba(255,255,255,.38);
+      border: 1px solid rgba(255,255,255,.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      position:relative;
+      z-index:2; /* 确保在插画层上方 */
+    }
+
+    /* 顶部标题区 */
+    .top{
+      padding:22px 24px 18px;
+      border-bottom:1px solid rgba(16,24,40,.06);
+      background: linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.42));
+      flex:0 0 auto;
+      position:relative;
+    }
+
     .kicker{
       font-size:12px;
-      letter-spacing:.12em;
-      color:rgba(16,24,40,.55);
+      letter-spacing:.16em;
+      color:rgba(16,24,40,.45);
       text-transform:uppercase;
-    }
-    .logo{
-      margin-top:14px;
-      font-size:44px;
-      font-weight:700;
-      line-height:1.02;
-      letter-spacing:-.02em;
-    }
-    .tag{
-      margin-top:14px;
-      font-size:15px;
-      color:rgba(16,24,40,.70);
-      line-height:1.6;
-      max-width: 38ch;
-    }
-    .note{
-      margin-top:18px;
-      font-size:12px;
-      color:rgba(16,24,40,.55);
-      line-height:1.6;
+      margin-bottom:12px;
     }
 
-    /* right chat panel */
+    /* ===== CSS 综艺感标题 ===== */
+    .logo{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      line-height:0.95;
+      width:max-content;
+      max-width:100%;
+      position:relative;
+    }
+    .logo-line{
+      display:flex;
+      align-items:flex-end;
+      gap:4px;
+      flex-wrap:nowrap;
+      width:max-content;
+      max-width:100%;
+    }
+    .logo-line span{
+      display:inline-block;
+      font-family: "Arial Black", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-weight:900;
+      letter-spacing:-0.05em;
+      color:#121a2f;
+      font-size: clamp(28px, 4vw, 52px);
+      line-height:0.92;
+      position:relative;
+      text-shadow:
+        0.8px 0.8px 0 rgba(255,255,255,.85),
+        -0.8px 0.8px 0 rgba(255,255,255,.7),
+        0 2px 0 rgba(18,26,47,.06);
+      transform-origin:center bottom;
+    }
+    .logo-line1 span:nth-child(1){ transform:rotate(-4deg) translateY(1px); }
+    .logo-line1 span:nth-child(2){ transform:rotate(2deg) translateY(-1px); }
+    .logo-line1 span:nth-child(3){ transform:rotate(-2deg) translateY(1px); }
+    .logo-line1 span:nth-child(4){ transform:rotate(3deg) translateY(0px); }
+    .logo-line1 span:nth-child(5){ transform:rotate(-3deg) translateY(1px); }
+
+    .logo-line2{ margin-left:8px; }
+    .logo-line2 span:nth-child(1){ transform:rotate(2deg) translateY(0px); }
+    .logo-line2 span:nth-child(2){ transform:rotate(-3deg) translateY(1px); }
+    .logo-line2 span:nth-child(3){ transform:rotate(3deg) translateY(-1px); }
+
+    .logo-line span::before{
+      content: attr(data-t);
+      position:absolute;
+      inset:0;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(229,109,107,.28);
+      transform: translate(1px, 1px);
+      z-index:-1;
+      opacity:.8;
+    }
+    .logo-line span::after{
+      content: attr(data-t);
+      position:absolute;
+      inset:0;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(135,225,255,.35);
+      transform: translate(-1px, -1px);
+      z-index:-2;
+      opacity:.7;
+    }
+    .logo-spark{
+      position:absolute;
+      right:-18px;
+      top:2px;
+      color:var(--pink-strong);
+      font-size:20px;
+      transform:rotate(12deg);
+      opacity:.9;
+      text-shadow: 0 0 12px rgba(229,109,107,.18);
+    }
+
+    .subline{
+      margin-top:14px;
+      font-size:14px;
+      color:rgba(16,24,40,.62);
+      line-height:1.6;
+      max-width: 68ch;
+    }
+
+    /* 聊天区 */
     .chat{
       display:flex;
       flex-direction:column;
       padding:16px;
       gap:12px;
-      min-height:0; /* ✅ 关键：让 .body 可以滚 */
+      min-height:0;
+      flex:1 1 auto;
+      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
     }
+
     .chatHead{
       display:flex;
       align-items:center;
       justify-content:space-between;
       padding:14px 14px;
       border-radius: var(--radius);
-      background: rgba(255,255,255,.60);
-      border:1px solid rgba(16,24,40,.10);
+      background: rgba(255,255,255,.72);
+      border:1px solid rgba(16,24,40,.06);
       box-shadow: var(--shadow2);
       flex:0 0 auto;
     }
+
     .chatTitle{
       display:flex;
       flex-direction:column;
       gap:3px;
     }
-    .chatTitle b{font-size:14px}
-    .chatTitle span{font-size:12px;color:var(--muted)}
+    .chatTitle b{
+      font-size:16px;
+      font-weight:800;
+      letter-spacing:-.01em;
+    }
+    .chatTitle span{
+      font-size:12px;
+      color:var(--muted);
+    }
+
     .pill{
       font-size:12px;
-      color:rgba(16,24,40,.62);
-      padding:8px 10px;
+      color:rgba(16,24,40,.60);
+      padding:8px 12px;
       border-radius:999px;
-      border:1px solid rgba(16,24,40,.10);
-      background:rgba(255,255,255,.60);
+      border:1px solid rgba(16,24,40,.08);
+      background:rgba(255,255,255,.85);
     }
 
     .body{
       flex:1 1 auto;
-      min-height:0; /* ✅ 关键：否则 overflow:auto 可能不滚 */
+      min-height:0;
       padding:14px 14px 18px;
       border-radius: var(--radius);
-      background: rgba(255,255,255,.52);
-      border:1px solid rgba(16,24,40,.10);
+      background: rgba(255,255,255,.62);
+      border:1px solid rgba(16,24,40,.06);
       overflow:auto;
       display:flex;
       flex-direction:column;
@@ -145,21 +256,26 @@
       box-shadow: var(--shadow2);
       -webkit-overflow-scrolling: touch;
     }
+
     .msg{
       max-width: 84%;
-      padding:12px 12px;
-      border-radius:16px;
+      padding:12px 13px;
+      border-radius:18px;
       font-size:14px;
-      line-height:1.55;
+      line-height:1.6;
       white-space:pre-wrap;
-      border:1px solid rgba(16,24,40,.10);
-      background:rgba(255,255,255,.72);
+      border:1px solid rgba(16,24,40,.07);
+      background:rgba(255,255,255,.86);
     }
-    .ai{align-self:flex-start}
+    .ai{
+      align-self:flex-start;
+      box-shadow: 0 4px 16px rgba(15,23,42,.04);
+    }
     .me{
       align-self:flex-end;
-      background: rgba(127, 173, 255, .26);
-      border-color: rgba(127, 173, 255, .42);
+      background:
+        linear-gradient(180deg, rgba(135,225,255,.30), rgba(250,122,119,.10));
+      border-color: rgba(135,225,255,.34);
     }
 
     .foot{
@@ -167,61 +283,193 @@
       gap:10px;
       padding:12px;
       border-radius: var(--radius);
-      background: rgba(255,255,255,.60);
-      border:1px solid rgba(16,24,40,.10);
+      background: rgba(255,255,255,.74);
+      border:1px solid rgba(16,24,40,.06);
       box-shadow: var(--shadow2);
       flex:0 0 auto;
       position:relative;
       z-index:10;
     }
+
     .input{
       flex:1;
-      border-radius:14px;
-      border:1px solid rgba(16,24,40,.12);
-      background: rgba(255,255,255,.78);
-      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(16,24,40,.08);
+      background: rgba(255,255,255,.92);
+      padding:13px 14px;
       font-size:14px;
       outline:none;
+      color:var(--text);
     }
+    .input::placeholder{
+      color:#8b93a6;
+    }
+    .input:focus{
+      border-color: rgba(135,225,255,.65);
+      box-shadow: 0 0 0 4px rgba(135,225,255,.18);
+    }
+
     .btn{
-      border-radius:14px;
-      border:1px solid rgba(16,24,40,.12);
-      background: rgba(255,255,255,.82);
-      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(16,24,40,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.80));
+      padding:12px 16px;
       cursor:pointer;
-      transition: transform .08s ease, background .12s ease;
+      transition: transform .08s ease, background .12s ease, box-shadow .12s ease;
       pointer-events:auto;
+      font-weight:800;
+      color:#1f2a44;
+      min-width:74px;
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.92);}
+    .btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(15,23,42,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(255,255,255,.90));
+    }
     .btn:disabled{opacity:.65; cursor:not-allowed;}
 
-    /* mobile */
+    /* 手机端 */
     @media (max-width: 900px){
       body{overflow:auto}
+      .wrap{
+        align-items:stretch;
+        padding:14px;
+      }
+
+      /* 手机上把插画缩小并更边缘，避免拥挤 */
+      .decor .d1{ width:110px; top:4%; left:1%; opacity:.14; }
+      .decor .d2{ width:110px; top:18%; right:1%; opacity:.14; }
+      .decor .d3{ width:120px; top:66%; left:1%; opacity:.12; }
+      .decor .d4{ width:125px; top:83%; right:1%; opacity:.12; }
+
       .shell{
-        grid-template-columns:1fr;
         height:auto;
+        min-height: calc(100vh - 28px);
+        border-radius:24px;
       }
-      .brand{
-        border-right:none;
-        border-bottom:1px solid rgba(255,255,255,.55);
+      .logo-line span{
+        font-size: clamp(24px, 8vw, 38px);
       }
-      .wrap{align-items:stretch}
-      .chat{min-height: 520px;}
+      .logo-line2{ margin-left:4px; }
+      .logo-spark{ right:-10px; top:-2px; font-size:16px; }
+      .chat{
+        min-height: 520px;
+        padding:12px;
+      }
+      .top{
+        padding:18px 18px 14px;
+      }
+      .subline{
+        font-size:13px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
+    <!-- S型漂浮插画层（不挡内容） -->
+    <div class="decor" aria-hidden="true">
+      <!-- 1. 左上 苹果+星星 -->
+      <svg class="d1" viewBox="0 0 220 160">
+        <g fill="none" stroke="#E56D6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M60 40 C48 26, 36 32, 34 46 C20 54, 18 74, 28 88 C34 116, 58 132, 90 130 C120 128, 142 114, 150 90 C162 74, 160 52, 146 44 C132 28, 112 28, 98 38 C84 28, 70 30, 60 40 Z"/>
+          <path d="M101 37 C103 22, 112 14, 122 14"/>
+          <path d="M104 35 C111 26, 120 28, 127 35"/>
+          <path d="M36 80 C22 80, 12 76, 4 70"/>
+          <path d="M154 80 C170 80, 184 74, 196 66"/>
+          <path d="M46 60 L54 52 M64 118 L72 110 M144 112 L154 102"/>
+          <circle cx="124" cy="52" r="7"/>
+          <circle cx="128" cy="52" r="2.8"/>
+          <path d="M78 78 L82 66 L86 78 L98 82 L86 86 L82 98 L78 86 L66 82 Z"/>
+          <path d="M98 72 L101 63 L104 72 L113 75 L104 78 L101 87 L98 78 L89 75 Z"/>
+          <path d="M116 82 L120 70 L124 82 L136 86 L124 90 L120 102 L116 90 L104 86 Z"/>
+          <path d="M63 92 L66 84 L69 92 L77 95 L69 98 L66 106 L63 98 L55 95 Z"/>
+          <path d="M136 70 L138 64 L140 70 L146 72 L140 74 L138 80 L136 74 L130 72 Z"/>
+          <path d="M28 58 l4 0 M30 56 l0 4 M166 54 l4 0 M168 52 l0 4 M22 104 l4 0 M24 102 l0 4 M172 104 l4 0 M174 102 l0 4"/>
+          <circle cx="42" cy="73" r="1.5"/><circle cx="54" cy="70" r="1.5"/><circle cx="150" cy="68" r="1.5"/>
+          <circle cx="58" cy="104" r="1.5"/><circle cx="148" cy="98" r="1.5"/>
+        </g>
+      </svg>
+
+      <!-- 2. 右上中 苹果切面 -->
+      <svg class="d2" viewBox="0 0 220 160">
+        <g fill="none" stroke="#E56D6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M80 34 C66 24, 50 30, 44 48 C28 58, 28 84, 44 96 C52 116, 72 128, 98 128 C112 128, 122 120, 126 106 C130 120, 140 128, 154 128 C180 128, 200 116, 208 96 C224 84, 224 58, 208 48 C202 30, 186 24, 172 34 C160 24, 142 28, 126 44 C110 28, 92 24, 80 34 Z"/>
+          <path d="M126 44 L126 106"/>
+          <path d="M102 64 C108 58, 116 58, 122 64"/>
+          <path d="M130 64 C136 58, 144 58, 150 64"/>
+          <path d="M110 82 C114 86, 118 86, 122 82"/>
+          <path d="M130 82 C134 86, 138 86, 142 82"/>
+          <path d="M156 36 C160 24, 170 18, 182 18"/>
+          <path d="M160 34 C168 28, 176 30, 184 36"/>
+          <path d="M52 72 L56 62 L60 72 L70 76 L60 80 L56 90 L52 80 L42 76 Z"/>
+          <path d="M182 74 L185 66 L188 74 L196 77 L188 80 L185 88 L182 80 L174 77 Z"/>
+          <path d="M36 52 l4 0 M38 50 l0 4 M200 54 l4 0 M202 52 l0 4 M36 108 l4 0 M38 106 l0 4 M202 110 l4 0 M204 108 l0 4"/>
+          <circle cx="62" cy="52" r="1.5"/><circle cx="188" cy="52" r="1.5"/><circle cx="38" cy="90" r="1.5"/><circle cx="204" cy="90" r="1.5"/>
+        </g>
+      </svg>
+
+      <!-- 3. 左下中 苹果+星轨 -->
+      <svg class="d3" viewBox="0 0 240 170">
+        <g fill="none" stroke="#E56D6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M72 42 C58 30, 42 36, 38 52 C22 60, 20 84, 34 98 C42 126, 68 144, 104 142 C136 140, 160 122, 168 96 C182 84, 182 58, 166 48 C152 30, 126 28, 110 42 C96 30, 82 32, 72 42 Z"/>
+          <path d="M112 40 C114 24, 124 16, 136 16"/>
+          <path d="M116 38 C124 30, 132 32, 140 38"/>
+          <path d="M86 84 L90 72 L94 84 L106 88 L94 92 L90 104 L86 92 L74 88 Z"/>
+          <path d="M118 64 L122 52 L126 64 L138 68 L126 72 L122 84 L118 72 L106 68 Z"/>
+          <path d="M136 92 L139 84 L142 92 L150 95 L142 98 L139 106 L136 98 L128 95 Z"/>
+          <path d="M62 104 L65 96 L68 104 L76 107 L68 110 L65 118 L62 110 L54 107 Z"/>
+          <path d="M28 118 C52 134, 86 146, 126 148 C162 150, 196 142, 226 122"/>
+          <path d="M12 102 C32 118, 52 126, 70 130"/>
+          <circle cx="28" cy="118" r="2"/><circle cx="52" cy="132" r="2"/><circle cx="86" cy="143" r="2"/><circle cx="126" cy="148" r="2"/><circle cx="162" cy="147" r="2"/><circle cx="196" cy="139" r="2"/><circle cx="226" cy="122" r="2"/>
+          <path d="M34 66 l4 0 M36 64 l0 4 M178 66 l4 0 M180 64 l0 4 M26 142 l4 0 M28 140 l0 4"/>
+        </g>
+      </svg>
+
+      <!-- 4. 右下 双苹果轨道 -->
+      <svg class="d4" viewBox="0 0 250 180">
+        <g fill="none" stroke="#E56D6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M90 58 C72 44, 52 50, 44 68 C28 78, 28 102, 42 114 C50 136, 72 148, 96 148 C112 148, 124 140, 130 126 C136 140, 148 148, 164 148 C188 148, 210 136, 218 114 C232 102, 232 78, 216 68 C208 50, 188 44, 170 58 C156 46, 142 48, 130 60 C118 48, 104 46, 90 58 Z"/>
+          <path d="M128 60 C132 44, 144 34, 158 34"/>
+          <path d="M132 58 C142 50, 150 52, 160 58"/>
+          <path d="M128 84 L132 72 L136 84 L148 88 L136 92 L132 104 L128 92 L116 88 Z"/>
+          <path d="M128 108 L131 100 L134 108 L142 111 L134 114 L131 122 L128 114 L120 111 Z"/>
+          <path d="M128 130 L130 124 L132 130 L138 132 L132 134 L130 140 L128 134 L122 132 Z"/>
+          <path d="M26 120 C62 96, 100 90, 142 94 C182 98, 214 114, 238 138"/>
+          <path d="M18 146 C56 160, 102 162, 154 154 C198 148, 226 132, 244 114"/>
+          <circle cx="26" cy="120" r="2"/><circle cx="62" cy="99" r="2"/><circle cx="100" cy="92" r="2"/><circle cx="142" cy="94" r="2"/><circle cx="182" cy="102" r="2"/><circle cx="214" cy="116" r="2"/><circle cx="238" cy="138" r="2"/>
+          <circle cx="18" cy="146" r="2"/><circle cx="56" cy="157" r="2"/><circle cx="102" cy="160" r="2"/><circle cx="154" cy="154" r="2"/><circle cx="198" cy="144" r="2"/><circle cx="226" cy="130" r="2"/><circle cx="244" cy="114" r="2"/>
+          <path d="M72 44 l4 0 M74 42 l0 4 M222 100 l4 0 M224 98 l0 4"/>
+        </g>
+      </svg>
+    </div>
+
     <div class="shell">
-      <section class="brand">
+      <!-- 顶部标题区（单栏） -->
+      <section class="top">
         <div class="kicker">MEMORY FRAGMENTS</div>
-        <div class="logo">灯灯的<br/>记忆碎片匣</div>
-        <div class="tag">我是一个小小的碎片匣导览员🍀 你问什么，我就翻什么。想问就直接问一个具体问题～</div>
-        <div class="note">小提示：如果我没翻到相关碎片，我会请你把问题问得更具体一点🙂</div>
+
+        <div class="logo" aria-label="灯灯的记忆碎片匣">
+          <div class="logo-line logo-line1">
+            <span data-t="灯">灯</span>
+            <span data-t="灯">灯</span>
+            <span data-t="的">的</span>
+            <span data-t="记">记</span>
+            <span data-t="忆">忆</span>
+          </div>
+          <div class="logo-line logo-line2">
+            <span data-t="碎">碎</span>
+            <span data-t="片">片</span>
+            <span data-t="匣">匣</span>
+          </div>
+          <div class="logo-spark">✦</div>
+        </div>
+
+        <div class="subline">像翻一本轻轻的小册子一样，问问看灯灯的兴趣、学习经历、生活碎片，或者你最好奇的纽约日常吧 ✨</div>
       </section>
 
+      <!-- 聊天区 -->
       <section class="chat">
         <div class="chatHead">
           <div class="chatTitle">
@@ -260,14 +508,23 @@
       d.className = `msg ${cls}`;
       d.textContent = text;
       body.appendChild(d);
-
-      // ✅ 最稳的自动滚动：滚到“新消息”本身
       d.scrollIntoView({ block: "end", behavior: "smooth" });
       return d;
     }
 
-    // 启动语：短一点，不爆输出
-    add("嗨～我在这儿🍀 你想先问哪一段碎片？", "ai");
+    // 开场语（放在对话框里）
+    add(
+`Hiii～我是灯灯的记忆碎片匣 🍎✨
+在这里你可以对灯灯有更多了解（爱好、学习经历、生活经历、纽约日常等等）
+如果你对她的纽约生活感到好奇，也可以直接问我具体一点的问题呀～`,
+      "ai"
+    );
+
+    add(
+`小提示📮：如果我没翻到相关碎片，不一定是你问得不好，可能是灯灯还没更新到这一页嘿嘿～
+你可以换个更具体的问法（地点 / 时间 / 事件关键词），我会更容易翻出来！`,
+      "ai"
+    );
 
     async function sendMsg(q){
       const msg = (q ?? input.value).trim();
@@ -283,7 +540,6 @@
       const thinking = add("（我翻翻碎片…）", "ai");
 
       try{
-        // ✅ 用表单提交，减少触发 CORS 预检
         const form = new URLSearchParams();
         form.set("chatInput", msg);
         form.set("sessionId", sessionId);
@@ -302,7 +558,6 @@
         const out = data.output || data.reply || data.text || data.message || "";
 
         thinking.textContent = out || "我这段暂时没翻到对应碎片🙂 你能把问题问得更具体一点吗？";
-        // 再保险滚一次（防某些浏览器 smooth 被打断）
         thinking.scrollIntoView({ block: "end", behavior: "smooth" });
 
       } catch(e){
